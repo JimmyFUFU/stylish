@@ -1,0 +1,223 @@
+@import "headerfooter.css";
+
+body .productdetail{
+  min-height: calc(100vh - 135px);
+  display: flex;
+  flex-direction :column;
+  width: 100vw;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 65px;
+  margin-bottom: 40px;
+}
+
+.detailtop{
+  display: flex;
+  flex-direction :row;
+  width: 960px;
+}
+
+.detailtop img {
+  width: 560px;
+  margin-right: 42px;
+}
+
+.producttext {
+  display: flex;
+  flex-direction :column;
+  justify-content:flex-start;
+}
+
+ #title{
+  letter-spacing: 6.4px;
+  text-align: left;
+  color: #3f3a3a;
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 32px;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+#product_id{
+  letter-spacing: 4px;
+  text-align: left;
+  color: #bababa;
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 40px;
+}
+
+#price{
+  text-align: left;
+  color: #3f3a3a;
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 30px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+#horizontalbar {
+  border-bottom: 2px solid #3f3a3a;
+  margin-bottom: 34px;
+}
+
+.detailselect {
+  display: flex;
+  flex-direction :column;
+  justify-content:space-between;
+  height: 255px;
+}
+
+#colortext ,#sizetext ,#quantitytext{
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 20px;
+  letter-spacing: 4px;
+  text-align: left;
+  color: #3f3a3a;
+}
+
+.color {
+  display: flex;
+  align-items:center;
+}
+
+.colorselect {
+  width: 24px;
+  height: 24px;
+  margin-left: 27px;
+}
+
+.size {
+  display: flex;
+  align-items:center;
+}
+
+.sizeselect {
+  width: 24px;
+  height: 24px;
+  background-color: #ececec;
+  font-family: "Noto Sans TC", "微軟正黑體";
+  text-align:center;
+  border-radius: 50%;
+  margin-left: 27px;
+}
+
+.quantity {
+  display: flex;
+  align-items:center;
+
+}
+
+.quantityselect {
+  width: 160px;
+  height: 44px;
+  margin-left: -45px;
+  border: 1px solid #979797;
+  text-align:center;
+  line-height: 44px;
+  color: #8b572a;
+  font-size: 20px;
+}
+
+.minus {
+  margin-left: 27px;
+  background-image:url('../../images/Minus.png')
+}
+
+.plus , .minus {
+  width: 44px;
+  height: 44px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.plus {
+  margin-left: -45px;
+  background-image:url('../../images/plus.png')
+}
+
+
+.addcart {
+ width: 360px;
+ height: 60px;
+ border: solid 1px #979797;
+ background-color: #000000;
+ color : #ffffff;
+ font-size: 20px;
+ font-family: "Noto Sans TC", "微軟正黑體";
+ text-align:center;
+ line-height:60px;
+ transition: 0.5s;
+}
+
+.addcart:hover {
+  background-color: #ffffff;
+  color : #000000;
+}
+
+.somenote {
+  margin-top: 30px;
+  height: 240px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+}
+
+.notetext {
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 20px;
+  letter-spacing: normal;
+  text-align: left;
+  color: #3f3a3a;
+  margin: 0;
+}
+
+.somenote .material {
+  margin: 35px 0;
+}
+
+.detailstory {
+  width: 960px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 50.3px;
+}
+
+.midup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.midtext{
+  color: #8b572a;
+  font-size: 20px;
+  width: 96px;
+  height: 30px;
+  line-height: 30px;
+  font-family: "Noto Sans TC", "微軟正黑體";
+}
+
+.midbar {
+  width: 800px;
+  height: 1px;
+  background-color: #3f3a3a;
+  margin-left: 6%;
+}
+
+.story {
+  font-family: "Noto Sans TC", "微軟正黑體";
+  font-size: 20px;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: left;
+  color: #3f3a3a;
+  margin : 30px 0 30px 0;
+}
+
+#images_1 , #images_2 {
+  width: 700px;
+  background-repeat: no-repeat;
+}

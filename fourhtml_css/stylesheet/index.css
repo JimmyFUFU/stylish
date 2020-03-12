@@ -1,0 +1,95 @@
+@import "headerfooter.css";
+
+body .mainpicture {
+  width: 100vw;
+  height: 500px;
+  background-image: url('../images/photos/keyvisuals/201807242222.jpg');
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+}
+
+body .mainpicture .story {
+  font-family: "Noto Sans TC", "微軟正黑體", "新細明體", arial, sans-serif;
+  font-size: 25px;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.9;
+  letter-spacing: normal;
+  text-align: left;
+  color: #070707;
+  margin: 166px 0 0 21%;
+}
+
+.Noproduct {
+  position: absolute;
+  top: auto;
+  left: auto;
+  font-size: 30px;
+  font-family: "微軟正黑體";
+  color: #95a5a6;
+  width: 100vw;
+  text-align : center;
+  margin-top: 70px;
+  margin-bottom: -40px;
+  z-index: -1;
+  /* border: 2px solid green; */
+}
+
+.productlist {
+  /* min-height: calc(100vh - 135px); */
+  width: 62.5%;
+  margin: 70px 19% 96px 19%;
+  flex-wrap: wrap;
+  /* border: 1px solid red; */
+  display: flex;
+  justify-content:space-around;
+  background-color: #FFFFFF;
+  z-index: 1;
+}
+
+.productlist .product {
+  /* border: 2px solid green; */
+  width: 32%;
+  margin-bottom: 50px;
+  transition: 0.5s;
+}
+
+.productlist .product:hover{
+  box-shadow : 10px 10px 5px rgba(99, 110, 114,1.0);
+}
+
+.productlist .product img {
+  /* height:20%; */
+  width: 100%;
+}
+
+.productlist .product .colors {
+  display: flex;
+  margin-top :20px;
+  margin-bottom: 20px;
+}
+
+.productlist .product .colors .color {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.productlist .product .name {
+  font-family: "微軟正黑體";
+  letter-spacing: 4px;
+  text-align: left;
+  color: #3f3a3a;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.productlist .product .price {
+  font-family: "微軟正黑體";
+  letter-spacing: 4px;
+  text-align: left;
+  color: #3f3a3a;
+  font-size: 20px;
+}

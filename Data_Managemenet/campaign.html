@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Campaigns Management</title>
+  <link rel=stylesheet type="text/css" href="/stylesheet/headerfooter.css">
+  <style media="screen">
+  body {
+    display:flex ;
+    flex-direction : column ;
+    align-items: center;
+    font-family: "微軟正黑體";
+  }
+  form {
+    border-radius: 5px;
+    border: 1px solid #8b572a;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  </style>
+  <script>
+  var API_HOST = location.origin;
+    //拿ID
+    var request = new XMLHttpRequest();
+    var responseJson;
+
+    function ajax(src, callback) {
+      request.open('GET', src);
+      request.onreadystatechange = function() {
+        if (request.status >= 200 && request.status < 400) {
+          responseJson = request.response;
+          //console.log(responseJson.data[0].id);
+          callback(responseJson);
+        }
+      };
+      request.responseType = 'json'
+      request.send();
+    };
+
+    function render(IdData) {
+      if (IdData != null) {
+        var product_id = document.getElementById('id');
+        for (let i = 0; i < IdData.length; i++) {
+          console.log(IdData[i].id);
+          var IDoption = document.createElement("option");
+          IDoption.text = IdData[i].id;
+          product_id.add(IDoption, product_id.length);
+        }
+
+      }
+    }
+    ajax(`${API_HOST}/totalID`,function(response){render(response);})
+
+  </script>
+</head>
+<header>
+  <a href="../index.html"><img src="../images/logo.png" alt="LOGO" id="logo"></a>
+  <div class="headerbottom"></div>
+</header>
+<h1>廣告活動</h1>
+<body>
+  <form action="/addcampaigns" method="POST" enctype="multipart/form-data">
+    <label>產品編號 :</label>
+    <select name="id" id="id" value="" required="required"></select>
+    <br><br>
+    <label>照片 :</label>
+    <input type="file" name="campaign_picture" required="required">
+    <br><br>
+    <label>Story :</label>
+    <textarea type="text" name="story" rows="10" cols="30"></textarea>
+    <br><br>
+
+    <button type="submit">submit</button>
+  </form>
+</body>
+<footer></footer>

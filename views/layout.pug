@@ -1,0 +1,12 @@
+doctype html
+html(lang="en")
+  head
+    title myName
+  body
+    if name
+      h2 Your name is #{name} !
+    else
+      form(action='/trackName' , method='get')
+        label Please enter your Name :
+          input(type="text" , name="yourname")
+          button(type="submit") submit

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Product</title>
+  <link rel=stylesheet type="text/css" href="stylesheet/product.css">
+  <style>
+       .tpfield {
+          height: 40px;
+          width: 300px;
+          border: 1px solid gray;
+          margin: 0 0;
+          padding: 5px;
+      }
+  </style>
+</head>
+<header class="header"></header>
+
+<body>
+  <div class="productdetail">
+    <div class="detailtop">
+
+      <img id="main_image" alt="main_image">
+
+      <div class="producttext">
+        <p id="title"></p>
+        <p id="product_id"  style="margin-bottom: 20px;"></p>
+        <p id="price"></p>
+        <div id="horizontalbar"></div>
+
+
+        <div class="detailselect" style="height:450px;">
+
+          <div class="color" id="color">
+            <div id="colortext">顏色 |</div>
+          </div>
+
+          <div class="size" id="size">
+            <div id="sizetext">尺寸 |</div>
+            <!-- <div class="sizeselect">XS</div>
+            <div class="sizeselect">S</div>
+            <div class="sizeselect">M</div>
+            <div class="sizeselect">L</div>
+            <div class="sizeselect">XL</div> -->
+          </div>
+
+          <div class="quantity">
+            <div id="quantitytext">數量 |</div>
+            <div class="minus"></div>
+            <div class="quantityselect">1</div>
+            <div class="plus"></div>
+          </div>
+
+          <div class="tpfield" id="cardnumber"></div>
+          <div class="tpfield" id="cardexpirationdate"></div>
+          <div class="tpfield" id="cardccv"></div>
+
+          <button class="addcart" onclick="tappay()">沒有購物車 直接買</Button>
+        </div>
+
+        <div class="somenote" style="height:120px; margin-top : 0;">
+          <div class="notetext" id="note"></div>
+          <div class="notetext" id="texture"></div>
+          <div class="notetext" id="wash"></div>
+          <div class="notetext" id="place"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detailstory">
+      <div class="midup">
+        <div class="midtext">細部說明</div>
+        <div class="midbar"></div>
+      </div>
+      <div class="story"></div>
+      <img id="images_1" alt="images_1">
+      <div class="story"></div>
+      <img id="images_2" alt="images_2">
+    </div>
+
+  </div>
+
+  <footer class="footer"></footer>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+  $(".header").load("header.html");
+  $(".footer").load("footer.html");
+  var API_HOST = location.origin;
+  //取得網址中參數 id
+  var getUrlString = location.href;
+  var url = new URL(getUrlString);
+  var id = url.searchParams.get('id');
+
+    var request = new XMLHttpRequest();
+    var responseJson;
+
+    function ajax(src, callback) {
+      request.open('GET', src);
+      request.onreadystatechange = function() {
+        if (request.status >= 200 && request.status < 400) {
+          responseJson = request.response;
+          callback(responseJson);
+        }
+      };
+      request.responseType = 'json'
+      request.send();
+    };
+
+    let countnull = 1;
+
+    function render(Data) {
+
+      if (Data == null) {
+        if (countnull == 3) {
+          alert("沒有這個 ID 哦 ~")
+        }
+        countnull++;
+      } else {
+        document.getElementById('title').innerText = Data.data.title;
+        document.getElementById('product_id').innerText = Data.data.id;
+        document.getElementById('price').innerText = `TWD.${Data.data.price}`;
+
+        tappayprice = Data.data.price //傳到API要用的
+
+        color = document.getElementById('color');
+        for (let i = 0; i < Data.data.colors.length; i++) {
+          var colordiv = document.createElement('div');
+          colordiv.className = "colorselect";
+          colordiv.style.backgroundColor = Data.data.colors[i].code;
+          color.appendChild(colordiv);
+        }
+
+        size = document.getElementById('size');
+        for (let i = 0; i < Data.data.sizes.length; i++) {
+          var sizediv = document.createElement('div');
+          sizediv.className = "sizeselect";
+          sizediv.innerText = Data.data.sizes[i];
+          size.appendChild(sizediv);
+        }
+
+        document.getElementById('main_image').src = Data.data.main_image;
+        document.getElementById('images_1').src = Data.data.images[0];
+        document.getElementById('images_2').src = Data.data.images[1];
+
+        document.getElementById('note').innerText = Data.data.note;
+        document.getElementById('texture').innerText = `布料：${Data.data.texture}`;
+        document.getElementById('wash').innerText = `洗滌方式：${Data.data.wash}`;
+        document.getElementById('place').innerText = `產地 /${Data.data.place}`;
+
+        document.getElementsByClassName("story")[0].innerText = Data.data.story;
+        document.getElementsByClassName("story")[1].innerText = Data.data.story;
+      }
+    }
+
+    ajax(`${API_HOST}/products/details?id=${id}`, function(response) {
+      render(response);
+    })
+
+</script>
+
+<script src="https://js.tappaysdk.com/tpdirect/v5.1.0"></script>
+<script type="text/javascript">
+
+  var tappayprice;
+
+  TPDirect.setupSDK(12348, 'app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF', "sandbox");
+  let fields = {
+    number: {
+      // css selector
+      element: '#cardnumber',
+      placeholder: '**** **** **** ****'
+    },
+    expirationDate: {
+      // DOM object
+      element: document.getElementById('cardexpirationdate'),
+      placeholder: 'MM / YY'
+    },
+    ccv: {
+      element: '#cardccv',
+      placeholder: 'ccv'
+    }
+  }
+  TPDirect.card.setup({
+    fields: fields,
+    styles: {
+      // Style all elements
+      'input': {
+        'color': 'gray'
+      },
+      // Styling ccv field
+      'input.ccv': {
+        'font-size': '16px'
+      },
+      // Styling expiration-date field
+      'input.expiration-date': {
+        'font-size': '16px'
+      },
+      // Styling card-number field
+      'input.card-number': {
+        'font-size': '16px'
+      },
+      // style focus state
+      ':focus': {
+        'color': 'black'
+      },
+      // style valid state
+      '.valid': {
+        'color': 'green'
+      },
+      // style invalid state
+      '.invalid': {
+        'color': 'red'
+      },
+      // Media queries
+      // Note that these apply to the iframe, not the root window.
+      '@media screen and (max-width: 400px)': {
+        'input': {
+          'color': 'orange'
+        }
+      }
+    }
+  })
+  // 得知目前卡片資訊的輸入狀態 一直都在跑
+  TPDirect.card.onUpdate(function(update) {
+    // update.canGetPrime === true
+    //  you can call TPDirect.card.getPrime()
+    if (update.canGetPrime) {
+      // Enable submit Button to get prime.
+      // submitButton.removeAttribute('disabled')
+    } else {
+      // Disable submit Button to get prime.
+      // submitButton.setAttribute('disabled', true)
+    }
+
+    // cardTypes = ['mastercard', 'visa', 'jcb', 'amex', 'unknown']
+    if (update.cardType === 'visa') {
+      // Handle card type visa.
+    }
+
+    // number 欄位是錯誤的
+    if (update.status.number === 2) {
+      // setNumberFormGroupToError()
+    } else if (update.status.number === 0) {
+      // setNumberFormGroupToSuccess()
+    } else {
+      // setNumberFormGroupToNormal()
+    }
+
+    if (update.status.expiry === 2) {
+      // setNumberFormGroupToError()
+    } else if (update.status.expiry === 0) {
+      // setNumberFormGroupToSuccess()
+    } else {
+      // setNumberFormGroupToNormal()
+    }
+
+    if (update.status.cvc === 2) {
+      // setNumberFormGroupToError()
+    } else if (update.status.cvc === 0) {
+      // setNumberFormGroupToSuccess()
+    } else {
+      // setNumberFormGroupToNormal()
+    }
+  })
+
+  var submitButton = document.querySelector('#submitbutton')
+
+  function tappay() {
+    TPDirect.card.getPrime(function(result) {
+      if (result.status !== 0) {
+        alert('getPrime 錯誤')
+        console.log('getPrime 錯誤')
+        return
+      }
+
+      var prime = result.card.prime
+
+
+      //Order Check Out API. Request format
+      jsonObj = {}; order={}; recipient={} ; list =[] ; OnePiece = {}; color ={};
+      jsonObj['prime'] = prime;
+
+      order['shipping'] = "delivery";
+      order['payment'] = "credit_card";
+      order['subtotal'] = tappayprice;
+      order['freight'] = 60;
+      order['total'] = tappayprice+60;
+
+      recipient['name'] = "jimmy";
+      recipient['phone'] = "0912876543";
+      recipient['email'] = "test@test.gmailcom";
+      recipient['address'] = "春日部";
+      recipient['time'] = "anytime";
+
+      color['code'] = document.getElementsByClassName('colorselect')[0].style.backgroundColor;
+      color['name'] = "看色碼";
+
+      OnePiece['id'] = document.getElementById('product_id').innerText;
+      OnePiece['name'] = document.getElementById('title').innerText;
+      OnePiece['price'] = tappayprice;
+      OnePiece['color'] = color;
+      OnePiece['size'] = "M";
+      OnePiece['qty'] = 1;
+
+      list.push(OnePiece);
+      order['recipient'] = recipient;
+      order['list'] = list;
+      jsonObj['order'] = order;
+
+      $.ajax({type: 'POST',
+  						data: JSON.stringify(jsonObj),
+  				        contentType: 'application/json',
+                          url: `${API_HOST}/order/checkout`,
+                          success: function(data) {
+                              //console.log(JSON.stringify(data));
+                              window.location.href=`${API_HOST}/thankyou.html?title=${document.getElementById('title').innerText}&id=${document.getElementById('product_id').innerText}&total=${tappayprice}&number=${data.data.number}`;
+                              //這次用直接跳轉到thankyou.HTML傳參數的
+                              //之後要完整資訊可能要在//Order Check Out API render thankyou.html(那邊好像也可以傳參數?)
+                              //alert(data.data.number)
+                          }
+            });
+    })
+  }
+</script>
+
+</html>

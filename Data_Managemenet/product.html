@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<head>
+    <title>Product Management</title>
+    <link rel=stylesheet type="text/css" href="/stylesheet/headerfooter.css">
+    <style media="screen">
+      body {
+        display:flex ;
+        flex-direction : column ;
+        align-items: center;
+        font-family: "微軟正黑體";
+      }
+      form {
+        border-radius: 5px;
+        border: 1px solid #8b572a;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+      #repeatedID{
+        display: inline-block;
+        font-size: 12px;
+
+      }
+      .addvariantsBtn , .addcolorBtn {
+        background-image:url('../../images/plus@2x.png');
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-position: center;
+        float: right;
+      }
+      .deletevariantsBtn , .deletecolorBtn {
+        background-image:url('../../images/Minus@2x.png');
+        width: 30px;
+        height: 30px;
+        background-repeat: no-repeat;
+        background-position: center;
+        float: right;
+        /* margin: 10px 0 -10px 120px; */
+      }
+      .onecolor , .onevariant {
+        border: 1px solid #979797;
+        border-radius: 5px;
+        margin: 5px 0;
+      }
+
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+
+      var API_HOST = location.origin;
+      // 拿到現有ID 直接在前端判斷ID是否存在
+      var idInSql = [];
+      $.ajax({type : 'GET' ,
+              url : `${API_HOST}/totalID` ,
+              success : function(data){
+                for (var i in data){
+                  idInSql.push(data[i].id);
+                }
+              }
+            })
+
+      function checkID(){
+        var inputid = document.getElementById('id')
+        var repeatedID = document.getElementById('repeatedID')
+        var idexists = false
+        for (var i in idInSql){
+          if(inputid.value === idInSql[i]){
+            repeatedID.innerText = `產品編號 ${inputid.value} 已經存在囉 ! `
+            repeatedID.style.color = 'red';
+            inputid.style.borderColor = 'red'
+            inputid.value = ''
+            idexists = true
+            console.log('id exists');
+            break
+          }
+        }
+        if(idexists == false){
+          repeatedID.innerText = '這個產品編號可以使用 ! '
+          repeatedID.style.color = '#2ecc71'
+          inputid.style.borderColor = '#2ecc71'
+          console.log('id not exists');
+        }
+      }
+
+      var countcolors = 0;
+      function addcolor(){
+        countcolors++
+        if(countcolors > 0)document.querySelectorAll('.deletecolorBtn')[0].style.display = 'block'
+        var totalcolor = document.getElementById('totalcolor')
+        var onecolor = document.querySelector('.onecolor')
+        var addonecolor = onecolor.cloneNode(true)
+        addonecolor.id = `onecolor${countcolors}`
+        totalcolor.appendChild(addonecolor)
+      }
+
+      var countvariants = 0;
+      function addvariant(){
+        countvariants++
+        if (countvariants > 0) document.querySelectorAll('.deletevariantsBtn')[0].style.display = 'block';
+        var totalvariants = document.getElementById("totalvariants")
+        var onevariant = document.querySelector('.onevariant')
+        var addonevariant = onevariant.cloneNode(true)
+        addonevariant.id = `onevariant${countvariants}`
+        totalvariants.appendChild(addonevariant)
+      }
+
+      function deletecolor(thisobject){
+        var thisdiv = document.getElementById(thisobject.parentNode.id)
+        var totalcolor = document.getElementById("totalcolor")
+        totalcolor.removeChild(thisdiv);
+        countcolors--
+        if (countcolors == 0) document.querySelectorAll('.deletecolorBtn')[0].style.display = 'none';
+      }
+
+      function deletevariant(thisobject){
+        var thisdiv = document.getElementById(thisobject.parentNode.id)
+        var totalvariants = document.getElementById("totalvariants")
+        totalvariants.removeChild(thisdiv);
+        countvariants--
+        if (countvariants == 0) document.querySelectorAll('.deletevariantsBtn')[0].style.display = 'none';
+      }
+
+      function checksize(){
+        var sizecheckbox = document.getElementsByName("sizecheckbox");
+        var len = sizecheckbox.length;
+        //var checked = false;
+        var variantssize = document.querySelectorAll(".variants_size");
+        for(let j = 0; j < variantssize.length; j++){
+          variantssize[j].options.length = 0;
+          for (let i = 0; i < len; i++)
+          {
+            if (sizecheckbox[i].checked == true)
+            {
+              var varItem = new Option(sizecheckbox[i].id, sizecheckbox[i].id);
+              variantssize[j].options.add(varItem);
+            }
+          }
+        }
+
+      }
+
+      function checkcolor(){
+        var colorcodetext = document.getElementsByName("colors_code");
+        var len = colorcodetext.length;
+
+        var checked = false;
+        var variantscolor = document.querySelectorAll('.variants_color');
+        for(let j = 0; j < variantscolor.length; j++){
+          variantscolor[j].options.length = 0;
+          for (let i = 0; i < len; i++)
+          {
+            if (colorcodetext[i].value !== null)
+            {
+              var varItem = new Option(colorcodetext[i].value, colorcodetext[i].value);
+              variantscolor[j].options.add(varItem);
+            }
+          }
+        }
+      }
+
+    </script>
+</head>
+<header>
+  <a href="../index.html"><img src="../images/logo.png" alt="LOGO" id="logo"></a>
+  <div class="headerbottom"></div>
+</header>
+<body>
+    <h1>填寫產品資訊</h1>
+    <form action="/addproduct" method="POST" enctype="multipart/form-data">
+      <label>產品編號 :</label>
+        <input type="number" name="id" id="id" onchange="checkID()" required="required">
+        <p id="repeatedID"></p>
+        <br><br>
+      <label>類別 :</label>
+        <input type="radio" name="category" value="men"> 男裝
+        <input type="radio" name="category" value="women"> 女裝
+        <input type="radio" name="category" value="accessories"> 配件
+        <br><br>
+      <label>產品名稱 :</label>
+        <input type="text" name="title" value="">
+        <br><br>
+      <label>描述 :</label>
+        <input type="text" name="description" value="" >
+        <br><br>
+      <label>價格 :</label>
+        <input type="number" name="price" min="0" value="0" >
+        <br><br>
+      <label>布料 :</label>
+        <input type="text" name="texture" value="" >
+        <br><br>
+      <label>洗滌方式 :</label>
+        <input type="text" name="wash" value="" >
+        <br><br>
+      <label>產地 :</label>
+        <input type="text" name="place" value="">
+        <br><br>
+      <label>Note :</label>
+        <input type="text" name="note" value="" >
+        <br><br>
+      <label>Story :</label>
+        <input type="text" name="story" value="">
+        <br><br>
+
+      <label>Color : </label>
+        <div onclick="addcolor()" class="addcolorBtn"></div><br><br>
+        <div id="totalcolor">
+          <div class="onecolor" id ="onecolor">
+          <div class="deletecolorBtn" onclick="deletecolor(this)" style="display:none;"></div><br>
+          &nbsp 顏色名稱 : <input type="text" name="colors_name"  placeholder="白 or White"><br>
+          &nbsp 色碼 : <input type="text" name="colors_code"  placeholder="#FFFFFF"><br><br>
+          </div>
+        </div>
+      <button type="button" onclick="checkcolor()" > 確認顏色</button><br><br>
+      <br><br>
+
+      <label>Size :</label>
+      <input type="checkbox" name="sizecheckbox" id="XS" value="XS">XS
+      <input type="checkbox" name="sizecheckbox" id="S" value="S">S
+      <input type="checkbox" name="sizecheckbox" id="M" value="M">M
+      <input type="checkbox" name="sizecheckbox" id="L" value="L">L
+      <input type="checkbox" name="sizecheckbox" id="XL" value="XL">XL
+      <br><br>
+      <button type="button" onclick="checksize()" > 確認尺寸</button><br><br>
+
+
+      <label> Variants:</label>
+      <div onclick="addvariant()" class="addvariantsBtn"></div><br><br>
+      <div id="totalvariants">
+        <div class="onevariant" id="onevariant">
+          <div class="deletevariantsBtn" onclick="deletevariant(this)" style="display:none;"></div><br>
+          &nbsp 色碼 : <select name="variants_color" class="variants_color" ></select>
+          &nbsp&nbsp 尺寸 : <select name="variants_size"  class="variants_size"  ></select><br><br>
+          &nbsp 庫存 : <input type="number" name="variants_stock" min="0" value="0"><br><br>
+        </div>
+      </div>
+      <br><br>
+
+      <label>main_image :</label>
+      <input type="file" name="main_image" value="" >
+      <br><br>
+
+      <label>images :</label>
+      <input type="file" name="images_1" value="" >
+      <input type="file" name="images_2" value="" >
+      <br><br>
+
+      <button type="submit" >submit</button>
+    </form>
+
+</body>
+<footer></footer>

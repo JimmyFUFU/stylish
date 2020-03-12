@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<head>
+  <title>TapPay Checkout</title>
+  <style>
+       .tpfield {
+          height: 40px;
+          width: 300px;
+          border: 1px solid gray;
+          margin: 5px 0;
+          padding: 5px;
+      }
+  </style>
+</head>
+<header>
+  <h2>TapPay Checkout</h2>
+</header>
+<body>
+  <h3>假的購物車</h3>
+  <div name="fakeCartForm">
+    <div id="fakeCart">
+      <div id="OneParchase">
+        <label>產品編號*</label><br>
+          <input type="text"  value=""  id='produce_id_in_cart' required="required">
+        <br><br>
+        <label>產品名稱</label><br>
+          <input type="text"  value="" id='produce_name_in_cart'>
+        <br><br>
+        <label>價格</label><br>
+          <input type="number"  value="" id='produce_price_in_cart' class="produce_price_in_cart" placeholder="想付多少寫多少" required="required">
+        <br><br>
+        <label>顏色</label><br>
+          <input type="text"  value="" id='produce_color_in_cart'>
+        <br><br>
+        <label>尺寸</label><br>
+          <input type="text"  value="" id='produce_size_in_cart'>
+        <br><br>
+        <label>數量</label><br>
+          <input type="number"  value="1" id='produce_quantity_in_cart' class="produce_quantity_in_cart">
+        <br><br>
+      </div>
+    </div>
+<!-- <button type="button" name="button" onclick="addOnePurchase()">加商品</button> -->
+
+
+    <h3>收件資訊</h3>
+      <label>收件人姓名*</label><br>
+        <input type="text"  value="" id='name' required="required">
+      <br><br>
+      <label>Email*</label><br>
+        <input type="text"  value="" id='email' required="required">
+      <br><br>
+      <label>手機號碼*</label><br>
+        <input type="text"  value="" id='phone' required="required">
+      <br><br>
+      <label>收件地址*</label><br>
+        <input type="text"  value="" id='address' required="required">
+      <br><br>
+      <label>配送時間*</label><br>
+        <input type="radio" name="time" value="morning">08:00 - 12:00
+        <input type="radio" name="time" value="afternoon">14:00 - 18:00
+        <input type="radio" name="time" value="anytime" CHECKED >不指定
+      <br><br><br>
+
+      <h3>付款資訊</h3>
+        <div class="tpfield"  id="cardnumber"></div>
+        <div class="tpfield"  id="cardexpirationdate"></div>
+        <div class="tpfield"  id="cardccv"></div>
+
+        <input type="hidden" id="prime">
+        <input type="hidden" id="shipping" value="delivery">
+        <input type="hidden" id="payment" value="credit_card">
+        <input type="hidden" id="subtotal">
+        <input type="hidden" id="freight">
+        <input type="hidden" id="total">
+        <input type="hidden" id="colorcode" value="#000000">
+
+        <button type="button" id="submitbutton" onclick="getprime()">Get Prime</button>
+        <br><br>
+        <div id="moneymoney"></div>
+        <button type="submit" disabled="disabled" id="sendAPIbutton">Send to Order Check Out API </button>
+  </div>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://js.tappaysdk.com/tpdirect/v5.1.0"></script>
+<script type="text/javascript">
+  var API_HOST = location.origin;
+  TPDirect.setupSDK(12348, 'app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF', "sandbox");
+  let fields = {
+      number: {
+          // css selector
+          element: '#cardnumber',
+          placeholder: '**** **** **** ****'
+      },
+      expirationDate: {
+          // DOM object
+          element: document.getElementById('cardexpirationdate'),
+          placeholder: 'MM / YY'
+      },
+      ccv: {
+          element: '#cardccv',
+          placeholder: 'ccv'
+      }
+  }
+  TPDirect.card.setup({
+    fields: fields,
+    styles: {
+        // Style all elements
+        'input': {
+            'color': 'gray'
+        },
+        // Styling ccv field
+        'input.ccv': {
+            'font-size': '16px'
+        },
+        // Styling expiration-date field
+        'input.expiration-date': {
+             'font-size': '16px'
+        },
+        // Styling card-number field
+        'input.card-number': {
+             'font-size': '16px'
+        },
+        // style focus state
+        ':focus': {
+             'color': 'black'
+        },
+        // style valid state
+        '.valid': {
+            'color': 'green'
+        },
+        // style invalid state
+        '.invalid': {
+            'color': 'red'
+        },
+        // Media queries
+        // Note that these apply to the iframe, not the root window.
+        '@media screen and (max-width: 400px)': {
+            'input': {
+                'color': 'orange'
+            }
+        }
+    }
+  })
+  // 得知目前卡片資訊的輸入狀態 一直都在跑
+  TPDirect.card.onUpdate(function (update) {
+    // update.canGetPrime === true
+    //  you can call TPDirect.card.getPrime()
+    if (update.canGetPrime) {
+        // Enable submit Button to get prime.
+        // submitButton.removeAttribute('disabled')
+    } else {
+        // Disable submit Button to get prime.
+        // submitButton.setAttribute('disabled', true)
+    }
+
+    // cardTypes = ['mastercard', 'visa', 'jcb', 'amex', 'unknown']
+    if (update.cardType === 'visa') {
+        // Handle card type visa.
+    }
+
+    // number 欄位是錯誤的
+    if (update.status.number === 2) {
+        // setNumberFormGroupToError()
+    } else if (update.status.number === 0) {
+        // setNumberFormGroupToSuccess()
+    } else {
+        // setNumberFormGroupToNormal()
+    }
+
+    if (update.status.expiry === 2) {
+        // setNumberFormGroupToError()
+    } else if (update.status.expiry === 0) {
+        // setNumberFormGroupToSuccess()
+    } else {
+        // setNumberFormGroupToNormal()
+    }
+
+    if (update.status.cvc === 2) {
+        // setNumberFormGroupToError()
+    } else if (update.status.cvc === 0) {
+        // setNumberFormGroupToSuccess()
+    } else {
+        // setNumberFormGroupToNormal()
+    }
+  })
+
+  var submitButton = document.querySelector('#submitbutton')
+
+
+  function getprime() {
+    // 讓 button click 之後觸發 getPrime 方法
+    TPDirect.card.getPrime(function (result) {
+
+        // const tappayStatus = TPDirect.card.getTappayFieldsStatus()
+        // console.log(tappayStatus.cardType)
+
+        if (result.status !== 0) {
+            console.log('getPrime 錯誤');
+            alert('getPrime 錯誤');
+            return
+        }
+        var prime = result.card.prime
+        console.log('getPrime 成功: ' + prime)
+        document.getElementById('prime').value = prime;
+        document.getElementById('sendAPIbutton').disabled=false;
+
+        //算錢 and 顯示
+        var totalPrice = 0 ,freightPrice = 60;
+        for(let i = 0 ; i <document.getElementsByClassName("produce_price_in_cart").length ; i++){
+          totalPrice += Number(document.getElementsByClassName("produce_price_in_cart")[i].value)*Number(document.getElementsByClassName("produce_quantity_in_cart")[i].value);
+        }
+        var p = document.createElement(p);
+        var moneymoney = document.getElementById("moneymoney");
+        p.innerHTML = `<h4 id="subtotal">總金額：${totalPrice}</h4>
+                       <h4 id=>運費：${freightPrice}</h4>
+                       <h4 id="total">應付金額：${totalPrice+freightPrice}</h4>`;
+        moneymoney.appendChild(p);
+
+        document.getElementById("subtotal").value = totalPrice;
+        document.getElementById("freight").value = freightPrice;
+        document.getElementById("total").value = totalPrice+freightPrice;
+
+        document.getElementById('submitbutton').disabled=true;
+    })
+  }
+
+  function addOnePurchase(){
+    var p = document.createElement(p);
+    var fakeCart = document.getElementById("fakeCart");
+    var OneParchase = document.getElementById("OneParchase");
+    p.innerHTML = OneParchase.innerHTML;
+    fakeCart.appendChild(p);
+  }
+
+  $('#sendAPIbutton').click(function(){
+    prime = $('#prime').val(),
+    shipping = $('#shipping').val(),
+    payment = $('#payment').val(),
+    subtotal = $('#subtotal').val(),
+    freight = $('#freight').val(),
+    total = $('#total').val(),
+    name =  $('#name').val(),
+    phone = $('#phone').val(),
+    email = $('#email').val(),
+    address = $('#address').val(),
+    time = $("input[name='time']:checked").val()
+
+    jsonObj = {}; order={}; recipient={} ; list =[] ; OnePiece = {}; color ={};
+    jsonObj['prime'] = prime;
+
+    order['shipping'] = shipping;
+    order['payment'] = payment;
+    order['subtotal'] = subtotal;
+    order['freight'] = freight;
+    order['total'] = total;
+
+    recipient['name'] = name;
+    recipient['phone'] = phone;
+    recipient['email'] = email;
+    recipient['address'] = address;
+    recipient['time'] = time;
+
+    color['code'] = $('#colorcode').val();
+    color['name'] = $('#produce_color_in_cart').val();
+
+    OnePiece['id'] = $('#produce_id_in_cart').val();
+    OnePiece['name'] = $('#produce_name_in_cart').val();
+    OnePiece['price'] = $('#produce_price_in_cart').val();
+    OnePiece['color'] = color;
+    OnePiece['size'] = $('#produce_size_in_cart').val();
+    OnePiece['qty'] = $('#produce_quantity_in_cart').val();
+
+    list.push(OnePiece);
+    order['recipient'] = recipient;
+    order['list'] = list;
+    jsonObj['order'] = order;
+
+    $.ajax({type: 'POST',
+						data: JSON.stringify(jsonObj),
+				        contentType: 'application/json',
+                        url: `${API_HOST}/order/checkout`,
+                        success: function(data) {
+                            alert(JSON.stringify(data));
+                        }
+          });
+
+  })
+
+
+</script>

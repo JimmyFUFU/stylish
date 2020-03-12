@@ -1,0 +1,29 @@
+<div class="headerup">
+  <a href="./index.html"><img src="../images/logo.png" alt="LOGO" id="logo"></a>
+  <nav class="category">
+    <a href="./index.html?category=women">女裝</a>|
+    <a href="./index.html?category=men">男裝</a>|
+    <a href="./index.html?category=accessories">配件</a>
+  </nav>
+
+  <div class="headerright">
+    <div class="search-box">
+      <input type="text" class="search-txt" id="search-txt" name="tag" placeholder="Type to search">
+      <div class="search-btn" onclick="search()"></div>
+    </div>
+    <div class="cart">
+      <img src="../images/shopping-cart.png" alt="shopping-cart">
+    </div>
+    <div class="member">
+      <a href="./profile.html"><img src="../images/member.png" alt="member"></a>
+    </div>
+  </div>
+</div>
+<div class="headerbottom"></div>
+<script>
+  var API_HOST = location.origin;
+  function search(){
+    var searchtxt = document.getElementById('search-txt').value;
+    window.location.href=`${API_HOST}/index.html?keyword=${searchtxt}`
+  }
+</script>

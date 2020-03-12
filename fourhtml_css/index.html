@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>test</title>
+  <link rel=stylesheet type="text/css" href="stylesheet/index.css">
+  <meta name="google-site-verification" content="78WJTQArloRAUTm6BTCT2G_-ATxmRkUAKwkmn7OVWow" />
+</head>
+<header class="header"></header>
+
+<body>
+  <div class="mainpicture" id="mainpicture">
+    <div class="story">於是<br>我也想要給你<br>一個那麼美好的自己<br>不朽《與自己和好如初》</div>
+  </div>
+  <div class="Noproduct"> 這裡沒有商品哦 QAQ</div>
+  <div class="productlist" id="productlist"></div>
+
+  <footer class="footer"></footer>
+
+</body>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+  $(".header").load("header.html");
+  $(".footer").load("footer.html");
+    var API_HOST = location.origin;
+
+    var request = new XMLHttpRequest();
+    var responseJson;
+
+    var nextpaging = 0 , nowpaging = 0;
+
+    function ajax(src, callback) {
+      request.open('GET', src);
+      request.onreadystatechange = function() {
+        if (request.status >= 200 && request.status < 400) {
+          responseJson = request.response;
+          callback(responseJson);
+        }
+      };
+      request.responseType = 'json'
+      request.send();
+    };
+
+    function render(Data) {
+      //console.log(Data)
+      var productlist = document.getElementById("productlist");
+      if (Data !== null) {
+
+        if(Data.next_paging !== undefined) {
+          nextpaging = Data.next_paging;
+        }
+
+        for (let i = 0; i < Data.data.length; i++) {
+
+          var anchorobject = document.createElement("a");
+          anchorobject.href = `${API_HOST}/product.html?id=${Data.data[i].id}`;
+          anchorobject.style.textDecoration = "none";
+
+          var productdiv = document.createElement("div");
+          productdiv.className = "product";
+
+
+          var img = document.createElement("img");
+          img.src = `${Data.data[i].main_image}`;
+
+          var colorsdiv = document.createElement("div");
+          colorsdiv.className = "colors"
+
+          for (let j = 0; j < Data.data[i].colors.length; j++) {
+            var onecolordiv = document.createElement("div");
+            onecolordiv.className = "color"
+            onecolordiv.style.backgroundColor = Data.data[i].colors[j].code;
+            colorsdiv.appendChild(onecolordiv);
+          }
+
+          var namediv = document.createElement("div");
+          namediv.className = "name"
+          namediv.innerText = Data.data[i].title;
+
+          var pricediv = document.createElement("div");
+          pricediv.className = "price"
+          pricediv.innerText = `TWD.${Data.data[i].price}`;
+
+          anchorobject.appendChild(img);
+          anchorobject.appendChild(colorsdiv);
+          anchorobject.appendChild(namediv);
+          anchorobject.appendChild(pricediv);
+
+          productdiv.appendChild(anchorobject);
+
+          productlist.appendChild(productdiv);
+        }
+      }
+    }
+
+    // 男裝女裝配件按鈕
+    var url = new URL(location.href)
+    var category = url.searchParams.get('category')
+    if(category != undefined){
+      var getproduct = `${API_HOST}/products/${category}`
+    }else{
+        var getproduct = `${API_HOST}/products/all`
+    }
+
+    // search
+    var keyword = url.searchParams.get('keyword')
+    if(keyword != undefined){
+      var getproduct = `${API_HOST}/products/search?keyword=${keyword}`
+    }
+    // 如果 category 跟 keyword 同時存在 會出事(會是用 keyword )
+
+    ajax(getproduct, function(response) {
+      render(response);
+    })
+
+
+  // 滾動換頁
+  $(window).scroll(function(){
+　　var scrollTop = $(this).scrollTop();  // 滾動條離頂部的距離
+　　var scrollHeight = $(document).height(); // 一整個滾動條的長度 = 整個body的高度
+　　var windowHeight = $(this).height(); // 視窗的高度 = 滾動條本人長度
+    var footerheight = $("footer").height(); // footer的高度
+    //滾到看到footer的時候做事
+　　if(scrollTop + windowHeight >= scrollHeight - footerheight + 100 && nowpaging < nextpaging){
+　　　　// alert("最底部了！");
+      ajax(`${getproduct}?paging=${nextpaging}`, function(response) {
+        render(response);
+      })
+      nowpaging = nextpaging;
+　　}
+});
+
+</script>
+</html>

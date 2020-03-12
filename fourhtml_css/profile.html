@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Profile</title>
+  <link rel=stylesheet type="text/css" href="stylesheet/profile.css">
+</head>
+<header class="header"></header>
+
+<body>
+  <div class="profilediv">
+    <div class="leftdiv">
+      <div class="basisdetail">會員基本資料 </div>
+      <div class="basisbar"></div>
+      <div class="nologin">
+        <div class="nologintext">你還沒登入哦！</div>
+        <div class="buttondiv">
+          <button class="button" id="" onclick="signin()">登入</button>
+          <button class="button" id="" onclick="signup()">註冊</button>
+        </div>
+      </div>
+      <button id="notyou" onclick="notyou()">我要登出</button>
+    </div>
+    <div class="rightdiv" id="rightdiv">
+
+      <form id="signupform">
+        <!-- action="/user/signup" method="post" -->
+        <div class="signtext"> Sign Up </div>
+        <div class="signup">
+          <label>Your name</label>
+          <input type="text" id="upname" value="" required="required"><br><br>
+          <label>Email</label>
+          <input type="text" id="upemail" value="" required="required"><br><br>
+          <label>Password</label>
+          <input type="password" id="uppassword" value="" required="required">
+          <button type="button" onclick="signupAjax()">Sign up !</button>
+        </div>
+      </form>
+
+      <form id="signinform">
+        <!--action="/user/signin" method="post" -->
+        <div class="signtext"> Sign In </div>
+        <div class="signin">
+          <label>Email：</label>
+          <input type="text" id="inemail" value="" required="required">
+          <label>Password</label>
+          <input type="password" id="inpassword" value="" required="required">
+          <input type="hidden" id="inprovider" value="native">
+          <button type="button" onclick="signinAjax()">Sign in !</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+  <footer class="footer"></footer>
+
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+  $(".header").load("header.html");
+  $(".footer").load("footer.html");
+  var API_HOST = location.origin;
+
+  function signin() {
+    document.getElementById('rightdiv').style.display = "block"
+    if (document.getElementById('signupform').style.display == "block")
+      document.getElementById('signupform').style.display = "none";
+    document.getElementById('signinform').style.display = "block";
+  }
+
+  function signup() {
+    document.getElementById('rightdiv').style.display = "block"
+    if (document.getElementById('signinform').style.display == "block")
+      document.getElementById('signinform').style.display = "none";
+    document.getElementById('signupform').style.display = "block";
+  }
+
+  function signupAjax() {
+    jsonObj = {};
+    jsonObj["name"] = $('#upname').val();
+    jsonObj["email"] = $('#upemail').val();
+    jsonObj["password"] = $('#uppassword').val();
+
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify(jsonObj),
+      contentType: 'application/json',
+      url: `${API_HOST}/user/signup`,
+      success : function(data){
+        //alert(JSON.stringify(data));
+        document.getElementsByClassName('nologin')[0].style.display = 'none';
+        var userdiv = document.createElement('div');
+        userdiv.className = 'userdiv';
+        userdiv.innerText = `${data.data.user.name}，恭喜你成為會員~\n你的會員編號：${data.data.user.id}\n email：${data.data.user.email}`
+        document.getElementsByClassName('leftdiv')[0].appendChild(userdiv);
+
+        //write token in localstorage
+        localStorage.setItem("access_token", data.data.access_token);
+
+        document.getElementById('notyou').style.display = "block";
+        document.getElementById('rightdiv').style.display = "none";
+
+      },
+      error : function(data){
+        //alert(JSON.stringify(data));
+        if(document.getElementById('signuperror') == undefined){
+          var signuperror = document.createElement('div');
+          signuperror.id = 'signuperror';
+          signuperror.innerText = data.responseJSON.error;
+          document.getElementsByClassName('signup')[0].appendChild(signuperror);
+        }else {
+          document.getElementById('signuperror').innerText = data.responseJSON.error;
+        }
+      }
+    })
+  }
+
+  function signinAjax() {
+    jsonObj = {};
+    jsonObj["provider"] = $('#inprovider').val();
+    jsonObj["email"] = $('#inemail').val();
+    jsonObj["password"] = $('#inpassword').val();
+
+    $.ajax({
+      type: 'POST',
+      data: JSON.stringify(jsonObj),
+      contentType: 'application/json',
+      url: `${API_HOST}/user/signin`,
+      success : function(data){
+        //alert(JSON.stringify(data));
+        document.getElementsByClassName('nologin')[0].style.display = 'none';
+        var userdiv = document.createElement('div');
+        userdiv.className = 'userdiv';
+        userdiv.innerText = `${data.data.user.name}，歡迎回來~\n會員編號 ${data.data.user.id}\n email ${data.data.user.email}`
+        document.getElementsByClassName('leftdiv')[0].appendChild(userdiv);
+
+        //write token in localstorage
+        localStorage.setItem("access_token", data.data.access_token);
+
+        document.getElementById('notyou').style.display = "block";
+        document.getElementById('rightdiv').style.display = "none";
+      },
+      error : function(data){
+        //alert(JSON.stringify(data));
+        if(document.getElementById('signinerror') == undefined){
+          var signinerror = document.createElement('div');
+          signinerror.id = 'signinerror';
+          signinerror.innerText = data.responseJSON.error;
+          document.getElementsByClassName('signin')[0].appendChild(signinerror);
+        }else{
+          document.getElementById('signinerror').innerText = data.responseJSON.error;
+        }
+      }
+    })
+  }
+
+
+  function notyou(){
+    localStorage.removeItem("access_token");
+    location.reload();
+  }
+
+  if(localStorage["access_token"])
+  {//此localStorage有存在
+      var str  =  localStorage.access_token; //把值取出來
+   }
+
+  $.ajax({
+    type: 'GET',
+    headers : {
+      'Authorization' : `Bearer ${str}`
+    },
+    //contentType: 'application/json',
+    url: `${API_HOST}/user/profile`,
+    success : function(data){
+      //alert(JSON.stringify(data));
+      document.getElementsByClassName('nologin')[0].style.display = 'none';
+      var userdiv = document.createElement('div');
+      userdiv.className = 'userdiv';
+      userdiv.innerText = `${data.data.name}，歡迎回來~\n會員編號 ${data.data.id}\n email ${data.data.email}`
+      document.getElementsByClassName('leftdiv')[0].appendChild(userdiv);
+      document.getElementById('notyou').style.display = "block";
+    },
+    error : function(data){
+      //alert(JSON.stringify(data));
+      console.log('please sign in !');
+    }
+  })
+
+</script>
+
+</html>

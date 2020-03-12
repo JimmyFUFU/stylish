@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Thank you</title>
+  <link rel=stylesheet type="text/css" href="stylesheet/thankyou.css">
+  <script src="https://kit.fontawesome.com/d0fb8d585a.js" crossorigin="anonymous"></script></head>
+<header class="header"></header>
+
+<body>
+  <div class="mainpicture" id="mainpicture">
+    <div class="story">於是<br>我也想要給你<br>一個那麼美好的自己<br>不朽《與自己和好如初》</div>
+  </div>
+  <p id="thk">Thank you~~</p>
+  <div id="detailtext"></div>
+
+  <footer class="footer"></footer>
+
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+  $(".header").load("header.html");
+  $(".footer").load("footer.html");
+  var getUrlString = location.href;
+  var url = new URL(getUrlString);
+  var id = url.searchParams.get('id');
+  var title = url.searchParams.get('title');
+  var price = url.searchParams.get('total');
+  var number = url.searchParams.get('number');
+
+  document.getElementById('detailtext').innerText = `感謝您的課金\n您這次買了一件${title} id:${id}, \n 運費 60 元 , 總共 ${Number(price)+60} 元 \n 這是你的訂單編號 : ${number}`
+</script>
+
+</html>
